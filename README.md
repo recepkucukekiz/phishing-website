@@ -34,7 +34,7 @@ Install dependencies
 Start the server
 
 ```bash
-  python api.py
+  python app.py
 ```
 
 
