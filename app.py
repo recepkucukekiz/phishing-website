@@ -256,6 +256,10 @@ def home():
     if request.method == "POST":
         url = request.form.get("url")
 
+        if len(url) == 0:
+          prediction = ""
+          return render_template("index.html", output = prediction)
+
         model = pickle.load(open("XGBClassifier.pickle.dat", "rb"))
 
         decetion_result = decetion(url)
