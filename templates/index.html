@@ -10,6 +10,18 @@
             height: 90%;
             position: relative;
         }
+        
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
 
         .center div  {
             margin: 0;
@@ -18,7 +30,8 @@
             left: 50%;
             transform: translate(-50%, -50%);
         }
-        h2, p, span, h5 {
+
+        h2, p, span, h5, th {
             color: white;
         }
     </style>
@@ -42,7 +55,43 @@
                 </form>
                 <br>
                 <h5 style="text-align: center;">{{ output }}</h5>
-                <p> {{ results }}</p>
+                <p style="text-align: center;">{{ url }}</p>
+                <br>
+                <table>
+                    <tr>
+                        <th>havingIP</th>
+                        <th>haveAtSign</th>
+                        <th>getLength</th>
+                        <th>getDepth</th>
+                        <th>redirection</th>
+                        <th>httpDomain</th>
+                        <th>tinyURL</th>
+                        <th>prefixSuffix</th>
+                        
+                      </tr>
+                      <tr>
+                        {% for item in results[:8] %}
+                            <th>{{item}}</th>
+                        {% endfor %}
+                      </tr>
+                </table>
+                <table>
+                    <tr>
+                        <th>dns</th>
+                        <th>web_traffic</th>
+                        <th>domainAge</th>
+                        <th>domainEnd</th>
+                        <th>iframe</th>
+                        <th>mouseOver</th>
+                        <th>rightClick</th>
+                        <th>forwarding</th>
+                    </tr>
+                    <tr>
+                        {% for item in results[8:] %}
+                            <th>{{item}}</th>
+                        {% endfor %}
+                      </tr>
+                </table>
             </div>
         </div>
     </div>

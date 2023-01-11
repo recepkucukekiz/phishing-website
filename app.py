@@ -42,7 +42,7 @@ def home():
         if len(url) == 0:
           prediction = ""
           res = ""
-          return render_template("index.html", output = prediction, results = res)
+          return render_template("index.html", output = prediction, results = res, url = "")
 
         model = pickle.load(open("XGBoost.pickle.dat", "rb"))
 
@@ -60,6 +60,6 @@ def home():
         prediction = ""
         res = ""
         
-    return render_template("index.html", output = prediction, results = res)
+    return render_template("index.html", output = prediction, results = res, url = url)
 
 app.run()
