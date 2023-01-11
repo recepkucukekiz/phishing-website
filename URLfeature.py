@@ -8,6 +8,15 @@ import requests
 from bs4 import BeautifulSoup
 import whois
 
+def dns(url):
+    dns = 0
+    try:
+        domain_name = whois.whois(urlparse(url).netloc)
+    except:
+        dns = 1
+
+    return dns
+
 # 2.Checks for IP address in URL (Have_IP)
 def havingIP(url):
   try:
@@ -17,6 +26,14 @@ def havingIP(url):
     ip = 0
   return ip
 
+# 3.Checks the presence of @ in URL (Have_At)
+def haveAtSign(url):
+    if "@" in url:
+        at = 1    
+    else:
+        at = 0    
+    return at
+
 # 4.Finding the length of URL and categorizing (URL_Length)
 def getLength(url):
   if len(url) < 54:
@@ -25,6 +42,14 @@ def getLength(url):
     length = 1            
   return length
 
+# 5.Gives number of '/' in URL (URL_Depth)
+def getDepth(url):
+    s = urlparse(url).path.split('/')
+    depth = 0
+    for j in range(len(s)):
+        if len(s[j]) != 0:
+            depth = depth+1
+    return depth
 #listing shortening services
 shortening_services = r"bit\.ly|goo\.gl|shorte\.st|go2l\.ink|x\.co|ow\.ly|t\.co|tinyurl|tr\.im|is\.gd|cli\.gs|" \
                       r"yfrog\.com|migre\.me|ff\.im|tiny\.cc|url4\.eu|twit\.ac|su\.pr|twurl\.nl|snipurl\.com|" \
@@ -157,6 +182,20 @@ def domainAge(domain_name):
     except:
         return 1
 
+def iframe(url):
+    try:
+        response = requests.get(url)
+    except:
+        response = ""
+    
+    if response == "":
+        return 1
+    else:
+        if re.findall(r"[<iframe>|<frameBorder>]", response.text):
+            return 0
+        else:
+            return 1
+
 # 14.End time of domain: The difference between termination time and current time (Domain_End) 
 def domainEnd(domain_name):
     try:
@@ -198,3 +237,37 @@ def getDomain(url):
     if re.match(r"^www.",domain):
         domain = domain.replace("www.","")
     return domain
+
+def mouseOver(url): 
+    try:
+        response = requests.get(url)
+    except:
+        response = ""
+
+    if response == "" :
+        return 1
+    else:
+        if re.findall("<script>.+onmouseover.+</script>", response.text):
+            return 1
+        else:
+            return 0
+
+def forwarding(url):
+    try:
+        response = requests.get(url)
+    except:
+        response = ""
+
+    if response == "":
+        return 1
+    else:
+        if len(response.history) <= 2:
+            return 0
+        else:
+            return 1
+
+def prefixSuffix(url):
+        if '-' in urlparse(url).netloc:
+            return 1            # phishing
+        else:
+            return 0            # legitimate

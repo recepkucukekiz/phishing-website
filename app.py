@@ -11,18 +11,21 @@ def featureExtraction(test_url):
     test_domain = getDomain(test_url)
 
     feature_result.append(havingIP(test_url))
-    feature_result.append(getLength(test_domain))
-    feature_result.append(tinyURL(test_url))
+    feature_result.append(haveAtSign(test_url))
+    feature_result.append(getLength(test_url))
+    feature_result.append(getDepth(test_url))
     feature_result.append(redirection(test_url))
     feature_result.append(httpDomain(test_url))
+    feature_result.append(tinyURL(test_url))
+    feature_result.append(prefixSuffix(test_url))
+    feature_result.append(dns(test_url))
     feature_result.append(web_traffic(test_url))
-    feature_result.append(ServerFormHandler(test_url))
-    feature_result.append(UsingPopupWindow(test_url))
-    feature_result.append(domainAge(test_domain))
-    feature_result.append(domainEnd(test_domain))
-    feature_result.append(NonStdPort(test_domain))
-    feature_result.append(forwarding(test_url))
+    feature_result.append(1 if dns == 1 else domainAge(test_domain))
+    feature_result.append(1 if dns == 1 else domainEnd(test_domain))
+    feature_result.append(iframe(test_url))
+    feature_result.append(mouseOver(test_url))
     feature_result.append(rightClick(test_url))
+    feature_result.append(forwarding(test_url))
 
     return feature_result
 
@@ -38,89 +41,25 @@ def home():
 
         if len(url) == 0:
           prediction = ""
-          return render_template("index.html", output = prediction)
+          res = ""
+          return render_template("index.html", output = prediction, results = res)
 
-        model = pickle.load(open("XGBV2.pickle.dat", "rb"))
+        model = pickle.load(open("XGBoost.pickle.dat", "rb"))
 
         decetion_result = decetion(url)
         prediction = model.predict(decetion_result)[0]
 
         if prediction == 1:
-            prediction_result = "SAFE"
-        else:
             prediction_result = "UNSAFE"
+        else:
+            prediction_result = "SAFE"
 
         prediction = prediction_result
+        res = decetion_result[0]
     else:
         prediction = ""
+        res = ""
         
-    return render_template("index.html", output = prediction)
-
-
-# # http://127.0.0.1:5000/api
-# @app.route('/api/all', methods=['GET'])
-# def api_all():
-#     return jsonify(
-#         {
-#             'id': 0,
-#             'title': 'A Fire Upon the Deep',
-#             'author': 'Vernor Vinge',
-#             'first_sentence': 'The coldsleep itself was dreamless.',
-#             'year_published': '1992'
-#         },
-#         {
-#             'id': 1,
-#             'title': 'The Ones Who Walk Away From Omelas',
-#             'author': 'Ursula K. Le Guin',
-#             'first_sentence': 'With a clamor of bells that set the swallows soaring, the Festival of Summer came to the city Omelas, bright-towered by the sea.',
-#             'published': '1973'
-#         },
-#         {
-#             'id': 2,
-#             'title': 'Dhalgren',
-#             'author': 'Samuel R. Delany',
-#             'first_sentence': 'to wound the autumnal city.',
-#             'published': '1975'
-#         }
-#      )
-
-# # http://127.0.0.1:5000/api?id=1
-# @app.route('/api', methods=['GET'])
-# def api_id():
-#     if 'id' in request.args:
-#         id = int(request.args['id'])
-#     else:
-#         return "Error: No id field provided. Please specify an id."
-
-#     results = []
-#     books = [
-#                 {
-#                     'id': 0,
-#                     'title': 'A Fire Upon the Deep',
-#                     'author': 'Vernor Vinge',
-#                     'first_sentence': 'The coldsleep itself was dreamless.',
-#                     'year_published': '1992'
-#                 },
-#                 {
-#                     'id': 1,
-#                     'title': 'The Ones Who Walk Away From Omelas',
-#                     'author': 'Ursula K. Le Guin',
-#                     'first_sentence': 'With a clamor of bells that set the swallows soaring, the Festival of Summer came to the city Omelas, bright-towered by the sea.',
-#                     'published': '1973'
-#                 },
-#                 {
-#                     'id': 2,
-#                     'title': 'Dhalgren',
-#                     'author': 'Samuel R. Delany',
-#                     'first_sentence': 'to wound the autumnal city.',
-#                     'published': '1975'
-#                 }
-#             ]
-    
-#     for book in books:
-#         if book['id'] == id:
-#             results.append(book)
-
-#     return jsonify(results)
+    return render_template("index.html", output = prediction, results = res)
 
 app.run()
