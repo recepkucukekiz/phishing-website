@@ -5,6 +5,7 @@ from URLfeature import *
 
 app = Flask(__name__)
 app.config["DEBUG"] = True
+model = pickle.load(open("XGBoost.pickle.dat", "rb")) #load the model
 
 def featureExtraction(test_url):
     feature_result = []
@@ -35,19 +36,20 @@ def decetion(url):
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
-     # If a form is submitted
-    if request.method == "POST":
-        url = request.form.get("url")
+    url = request.form.get("url") #get url from request url
 
+    if request.method == "POST": # If a form is submitted
         if len(url) == 0:
           prediction = ""
           res = ""
           return render_template("index.html", output = prediction, results = res, url = "")
 
-        model = pickle.load(open("XGBoost.pickle.dat", "rb"))
+        if not (url.startswith('http://') or url.startswith('https://')): #if given url does not start with http or https add http
+            url = 'http://' + url
+        print("url:", url)
 
-        decetion_result = decetion(url)
-        prediction = model.predict(decetion_result)[0]
+        decetion_result = decetion(url) #get feature vector
+        prediction = model.predict(decetion_result)[0] #predict the url
 
         if prediction == 1:
             prediction_result = "UNSAFE"
@@ -56,10 +58,11 @@ def home():
 
         prediction = prediction_result
         res = decetion_result[0]
+        return render_template("index.html", output = prediction, results = res, url = url) #render the template with the prediction
+
     else:
         prediction = ""
         res = ""
+        return render_template("index.html", output = prediction, results = res, url = "") 
         
-    return render_template("index.html", output = prediction, results = res, url = url)
-
 app.run()
